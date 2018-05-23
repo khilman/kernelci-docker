@@ -4,9 +4,9 @@ services:
     image: lucj/kernelci-proxy:${TAG:-latest}
     build: ./proxy
     ports:
-      - 8080:8080
-      - 8081:8081
-      - 8082:8082
+      - 18080:8080
+      - 18081:8081
+      - 18082:8082
     restart: on-failure
     volumes:
       - kci:/usr/share/nginx/html/kernelci/logs

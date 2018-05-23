@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export COMPOSE_PROJECT_NAME="AGL-kernelci-$USER"
 TIMEOUTMAX=120
 
 # Get host's IP (127.0.0.1 is assumed if $DOCKET_HOST is empty)
@@ -27,7 +28,7 @@ docker-compose up -d || exit $?
 
 echo "-> waiting for backend..."
 TIMEOUT=0
-while [ $(curl -s -m 3 -o /dev/null -w "%{http_code}" $IP:8081) -ne 200 ]; do
+while [ $(curl -s -m 3 -o /dev/null -w "%{http_code}" $IP:18081) -ne 200 ]; do
    sleep 1
    TIMEOUT=$(($TIMEOUT+1))
    if [ $TIMEOUT -ge $TIMEOUTMAX ];then
@@ -37,7 +38,7 @@ while [ $(curl -s -m 3 -o /dev/null -w "%{http_code}" $IP:8081) -ne 200 ]; do
 done
 echo "-> waiting for frontend..."
 TIMEOUT=0
-while [ $(curl -s -m 3 -o /dev/null -w "%{http_code}" $IP:8080) -ne 200 ]; do
+while [ $(curl -s -m 3 -o /dev/null -w "%{http_code}" $IP:18080) -ne 200 ]; do
   sleep 1
    TIMEOUT=$(($TIMEOUT+1))
    if [ $TIMEOUT -ge $TIMEOUTMAX ];then
@@ -56,7 +57,7 @@ echo "-> requesting token from backend..."
 TOKEN=""
 TIMEOUT=0
 while [ "$TOKEN" = "" ];do
-  TOKEN=$(curl -m 3 -s -X POST -H "Content-Type: application/json" -H "Authorization: MASTER_KEY" -d '{"email": "adm@kernelci.org", "admin": 1}' $IP:8081/token | docker container run --rm -i lucj/jq -r .result[0].token 2>/dev/null)
+  TOKEN=$(curl -m 3 -s -X POST -H "Content-Type: application/json" -H "Authorization: MASTER_KEY" -d '{"email": "adm@kernelci.org", "admin": 1}' $IP:18081/token | docker container run --rm -i lucj/jq -r .result[0].token 2>/dev/null)
   sleep 1
    TIMEOUT=$(($TIMEOUT+1))
    if [ $TIMEOUT -ge 60 ];then
@@ -76,6 +77,6 @@ docker-compose stop frontend || exit $?
 docker-compose start frontend || exit $?
 
 echo "-> application configured"
-echo "--> frontend available on port 8080"
-echo "--> backend  available on port 8081"
-echo "--> storage  available on port 8082"
+echo "--> frontend available on port 18080"
+echo "--> backend  available on port 18081"
+echo "--> storage  available on port 18082"

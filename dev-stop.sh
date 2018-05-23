@@ -1,4 +1,5 @@
 #!/bin/bash
+export COMPOSE_PROJECT_NAME="AGL-kernelci-$USER"
 
 echo "-> Stopping the application..."
 
